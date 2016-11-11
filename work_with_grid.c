@@ -6,19 +6,29 @@
 /*   By: lgutniko <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/24 14:13:02 by lgutniko          #+#    #+#             */
-/*   Updated: 2016/10/24 14:13:05 by lgutniko         ###   ########.fr       */
+/*   Updated: 2016/11/10 11:08:02 by iiliuk           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-int			grid_available(char **grid, struct s_p	*pg)
+int		grid_available(char **grid, struct s_p	*pg, char ***mino_array, int i)
 {
+	char		**uno_mino;
+	struct s_p	*pm;
+
+	if ((*mino_array)[i] == NULL)
+		return (0);
+	uno_mino = NULL;
+	pm = point_create();
+	uno_mino = make_mino(*mino_array, i);
+	pm = mino_corner(uno_mino, pm);
 	while (grid[pg->row] != NULL)
 	{
 		while (grid[pg->row][pg->column] != '\0')
 		{
-			if (grid[pg->row][pg->column] == '.')
+			if (grid[pg->row][pg->column] == '.' ||
+			uno_mino[pm->row][pm->column] == '.')
 				return (1);
 			pg->column++;
 		}
@@ -28,7 +38,7 @@ int			grid_available(char **grid, struct s_p	*pg)
 	return (0);
 }
 
-int			check_if_fits(char **gr, char **mi, struct s_p *pg, struct s_p *pm)
+int		check_if_fits(char **gr, char **mi, struct s_p *pg, struct s_p *pm)
 {
 	int i;
 	int a;
@@ -57,7 +67,7 @@ int			check_if_fits(char **gr, char **mi, struct s_p *pg, struct s_p *pm)
 	return (1);
 }
 
-char		**place_mino(char ***gr, char **mi, struct s_p **pg, struct s_p *pm)
+char	**place_mino(char ***gr, char **mi, struct s_p **pg, struct s_p *pm)
 {
 	int i;
 	int a;
@@ -80,7 +90,7 @@ char		**place_mino(char ***gr, char **mi, struct s_p **pg, struct s_p *pm)
 	return ((*gr));
 }
 
-int			remove_mino(char **grid, int index)
+int		remove_mino(char **grid, int index)
 {
 	int		row;
 	int		column;
@@ -99,4 +109,17 @@ int			remove_mino(char **grid, int index)
 		row++;
 	}
 	return (0);
+}
+
+void	grid_expand(char ***grid)
+{
+	int		capacity;
+
+	capacity = 0;
+	while ((*grid)[capacity] != '\0')
+		capacity++;
+	capacity++;
+	if (*grid != NULL)
+		free_array(*grid);
+	*grid = grid_create(capacity);
 }

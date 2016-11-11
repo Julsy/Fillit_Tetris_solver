@@ -58,7 +58,7 @@ void		print_grid(char **grid)
 	while (grid[i])
 	{
 		ft_putstr(grid[i]);
-		ft_putstr("\n");
+		write(1, "\n", 1);
 		i++;
 	}
 }

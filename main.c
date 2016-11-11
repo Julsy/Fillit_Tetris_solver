@@ -6,25 +6,13 @@
 /*   By: iiliuk <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/24 14:06:01 by iiliuk            #+#    #+#             */
-/*   Updated: 2016/10/24 14:06:04 by iiliuk           ###   ########.fr       */
+/*   Updated: 2016/11/10 11:03:42 by iiliuk           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
 #define BUFSIZE 600
-
-void		ft_putstr(char *str)
-{
-	int	i;
-
-	i = 0;
-	while (str[i])
-	{
-		write(2, &str[i], 1);
-		i++;
-	}
-}
 
 char		*read_file(char *filename)
 {
@@ -42,31 +30,6 @@ char		*read_file(char *filename)
 	res = read(fd, buf, BUFSIZE);
 	close(fd);
 	return (buf);
-}
-
-int			check_errors(char *input)
-{
-	if (new_line_check(input) == -1 || line_count(input) == -1)
-	{
-		ft_putstr("error\n");
-		exit(-1);
-	}
-	else if (dot_pound_check(input) == -1 || elem_order_check(input) == -1)
-	{
-		ft_putstr("error\n");
-		exit(-1);
-	}
-	else if (pattern_check(input) == -1)
-	{
-		ft_putstr("error\n");
-		exit(-1);
-	}
-	else if (line_count(input) > 26)
-	{
-		ft_putstr("error\n");
-		exit(-1);
-	}
-	return (0);
 }
 
 int			main(int argc, char **argv)

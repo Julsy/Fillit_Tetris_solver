@@ -6,7 +6,7 @@
 /*   By: lgutniko <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/24 13:54:15 by lgutniko          #+#    #+#             */
-/*   Updated: 2016/10/24 13:54:16 by lgutniko         ###   ########.fr       */
+/*   Updated: 2016/11/10 11:05:18 by lgutniko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,11 +19,13 @@ int		attempt(char ***grid, char ***mino_array, struct s_p **pg, int index)
 	finished = 0;
 	while (!finished)
 	{
-		if ((*pg)->steps > 200)
+		if ((*pg)->steps > 170)
 			finished = second_step(grid, mino_array, pg, index);
-		else if (grid_available(*grid, *pg) && (*mino_array)[index] != NULL)
+		else if (grid_available(*grid, *pg, mino_array, index) &&
+		(*mino_array)[index] != NULL)
 			finished = first_step(grid, mino_array, pg, index);
-		else if (!grid_available(*grid, *pg) && (*mino_array)[index] != NULL)
+		else if (!grid_available(*grid, *pg, mino_array, index) &&
+		(*mino_array)[index] != NULL)
 			finished = second_step(grid, mino_array, pg, index);
 		else
 			finished = 1;
@@ -75,42 +77,46 @@ int		second_step(char ***grid, char ***mino_array, struct s_p **pg, int ind)
 
 int		backtrack(char ***gr, char ***mino_array, struct s_p **pg, int i)
 {
-	int		row;
-	int		col;
+	int			row;
+	int			col;
+	char		**uno_mino;
+	struct s_p	*pm;
 
+	i--;
 	row = 0;
 	col = 0;
-	i--;
-	while ((*gr)[row] != NULL)
-	{
-		while ((*gr)[row][col] != '\0')
-		{
-			if ((*gr)[row][col] == 'A' + i && ((*gr)[row][col + 1] == 'A' + i ||
-			(*gr)[row][col + 1] == '.' || (*gr)[row][col + 1] == '\0'))
-				break ;
-			col++;
-		}
-		if ((*gr)[row][col] == 'A' + i && ((*gr)[row][col + 1] == 'A' + i ||
-		(*gr)[row][col + 1] == '.' || (*gr)[row][col + 1] == '\0'))
-			break ;
-		col = 0;
-		row++;
-	}
+	uno_mino = NULL;
+	pm = point_create();
+	uno_mino = make_mino(*mino_array, i);
+	pm = mino_corner(uno_mino, pm);
+	find_first_hash(gr, &row, &col, i);
 	(*pg)->row = row;
 	(*pg)->column = col + 1;
+	if (uno_mino[pm->row][pm->column] == '.' &&
+	uno_mino[pm->row][pm->column + 1] == '.')
+		(*pg)->column = col - 1;
+	else if (uno_mino[pm->row][pm->column] == '.')
+		(*pg)->column = col;
 	remove_mino(*gr, i);
 	return (attempt(gr, mino_array, pg, i));
 }
 
-void	grid_expand(char ***grid)
+void	find_first_hash(char ***gr, int *row, int *col, int i)
 {
-	int		capacity;
-
-	capacity = 0;
-	while ((*grid)[capacity] != '\0')
-		capacity++;
-	capacity++;
-	if (*grid != NULL)
-		free_array(*grid);
-	*grid = grid_create(capacity);
+	while ((*gr)[*row] != NULL)
+	{
+		while ((*gr)[*row][*col] != '\0')
+		{
+			if ((*gr)[*row][*col] == 'A' + i &&
+			((*gr)[*row][*col + 1] == 'A' + i ||
+			(*gr)[*row][*col + 1] == '.' || (*gr)[*row][*col + 1] == '\0'))
+				break ;
+			(*col)++;
+		}
+		if ((*gr)[*row][*col] == 'A' + i && ((*gr)[*row][*col + 1] == 'A' + i ||
+		(*gr)[*row][*col + 1] == '.' || (*gr)[*row][*col + 1] == '\0'))
+			break ;
+		*col = 0;
+		(*row)++;
+	}
 }
